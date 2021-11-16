@@ -1,7 +1,7 @@
 import discord
 import os
 import webserver
-import test1
+#import test1
 from webserver import keep_alive
 from discord.ext import commands
 import csv
