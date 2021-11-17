@@ -25,7 +25,7 @@ class MyBot(commands.Bot):
             e = discord.Embed(
                 title="Zero Two",
                 url="https://us.rule34.xxx//images/4608/1603d38255486b28981da501b0da5801.jpeg?5249040",
-                description="Anime girls won't fall for you dipshits", #SHEEEEEESH
+                description="Anime girls will only fall for PD", #SHEEEEEESH
                 color=discord.Color.blue())
             e.set_author(name=activeUser, url='https://github.com/themexpride',icon_url=activeUser.avatar_url)
             e.set_image(url='https://us.rule34.xxx//images/4608/1603d38255486b28981da501b0da5801.jpeg?5249040')
