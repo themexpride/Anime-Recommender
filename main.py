@@ -1,10 +1,12 @@
 import discord
 import os
 import webserver
+import token
 #import test1
 from webserver import keep_alive
 from discord.ext import commands
 import csv
+from token import getToken
 
 #intents = discord.Intents.default()
 #intents.members = True
@@ -93,4 +95,4 @@ class Search(commands.Bot):
 
 keep_alive()
 b = MyBot(command_prefix = "!", self_bot = False)
-b.run(os.environ['TOKEN'])
+b.run(os.environ[getToken])
