@@ -1,11 +1,14 @@
 import pandas as pd
 from tensorflow import keras
 
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 
 class _Model:
   _model = None
 
-  def __init__(self):  
+  def __init__(self):
     model_ratings = pd.read_csv('rating2.csv')
     anime_ids = model_ratings['anime_id'].unique().tolist()
 
