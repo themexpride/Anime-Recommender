@@ -1,8 +1,6 @@
 import discord
 import os
-import webserver
-#import test1
-from webserver import keep_alive
+import token
 from discord.ext import commands
 import csv
 
@@ -91,6 +89,5 @@ class Search(commands.Bot):
         # response = random.choice(brooklyn_99_quotes)
         await message.channel.send(response)
 
-keep_alive()
 b = MyBot(command_prefix = "!", self_bot = False)
-b.run(os.environ['TOKEN'])
+b.run(os.getenv('TOKEN'))
