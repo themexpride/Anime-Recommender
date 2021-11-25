@@ -9,41 +9,6 @@ import csv
 #To gather server members from whatever server the bot is in
 #REQUIRES ENABLING "SERVER MEMBER INTENT" FROM THE DISCORD DEVELOPER PORTAL
 
-class MyBot(commands.Bot):
-    def __init__(self, command_prefix, self_bot):
-        commands.Bot.__init__(self, command_prefix=command_prefix, self_bot=self_bot)
-        self.message1 = "[INFO]: Bot now online"
-        self.message2 = "Bot still online"
-        self.add_commands()
-
-    def add_commands(self):
-        @self.command()
-        async def embd(ctx):
-            activeUser = ctx.message.author
-            e = discord.Embed(
-                title="Zero Two",
-                url="https://us.rule34.xxx//images/4608/1603d38255486b28981da501b0da5801.jpeg?5249040",
-                description="Anime girls will only fall for PD", #SHEEEEEESH
-                color=discord.Color.blue())
-            e.set_author(name=activeUser, url='https://github.com/themexpride',icon_url=activeUser.avatar_url)
-            e.set_image(url='https://us.rule34.xxx//images/4608/1603d38255486b28981da501b0da5801.jpeg?5249040')
-            await ctx.send(embed=e)
-        
-        @self.command()
-        async def hello(ctx):
-          await ctx.send('Hello!')
-
-    async def on_ready(self):
-        print('We have logged in as {0.user}'.format(self))
-
-    async def help(ctx):
-        e = discord.Embed(
-                title="Text Formatting",
-                url="https://realdrewdata.medium.com/",
-                description="Here are some ways to format text",
-                color=discord.Color.blue())
-        await ctx.send(embed=e)
-            
 class Search(commands.Bot):
   def __init__(self, command_prefix, self_bot):
     commands.Bot.__init__(self, command_prefix=command_prefix, self_bot=self_bot)
@@ -88,6 +53,42 @@ class Search(commands.Bot):
     if message.content == '99!':
         # response = random.choice(brooklyn_99_quotes)
         await message.channel.send(response)
+
+class MyBot(commands.Bot):
+    def __init__(self, command_prefix, self_bot):
+        commands.Bot.__init__(self, command_prefix=command_prefix, self_bot=self_bot)
+        self.message1 = "[INFO]: Bot now online"
+        self.message2 = "Bot still online"
+        self.add_commands()
+
+    def add_commands(self):
+        @self.command()
+        async def embd(ctx):
+            activeUser = ctx.message.author
+            e = discord.Embed(
+                title="Zero Two",
+                url="https://us.rule34.xxx//images/4608/1603d38255486b28981da501b0da5801.jpeg?5249040",
+                description="Anime girls will only fall for PD", #SHEEEEEESH
+                color=discord.Color.blue())
+            e.set_author(name=activeUser, url='https://github.com/themexpride',icon_url=activeUser.avatar_url)
+            e.set_image(url='https://us.rule34.xxx//images/4608/1603d38255486b28981da501b0da5801.jpeg?5249040')
+            await ctx.send(embed=e)
+
+        @self.command()
+        async def hello(ctx):
+          await ctx.send('Hello!')
+
+    async def on_ready(self):
+        print('We have logged in as {0.user}'.format(self))
+
+    async def help(ctx):
+        e = discord.Embed(
+                title="Text Formatting",
+                url="https://realdrewdata.medium.com/",
+                description="Here are some ways to format text",
+                color=discord.Color.blue())
+        await ctx.send(embed=e)
+
 
 b = MyBot(command_prefix = "!", self_bot = False)
 b.run(os.getenv('TOKEN'))
