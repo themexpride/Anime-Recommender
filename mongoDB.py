@@ -6,3 +6,5 @@ db = client.admin
 
 serverStatusResult = db.command("serverStatus")
 pprint(serverStatusResult)
+
+#ok
