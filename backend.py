@@ -1,5 +1,8 @@
 import pandas as pd
 import numpy as np
+from mongoDB import getDB
+
+db = getDB()
 
 class _Backend:
   _backend = None
