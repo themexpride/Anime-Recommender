@@ -24,8 +24,6 @@ class MyBot(commands.Bot):
         self.message2 = "Bot still online"
         self.add_commands()
 
-    d
-
     def add_commands(self):
         @self.command()
         async def embd(ctx):
