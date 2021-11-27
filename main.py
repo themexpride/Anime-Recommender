@@ -12,6 +12,19 @@ from typing import Union
 #To gather server members from whatever server the bot is in
 #REQUIRES ENABLING "SERVER MEMBER INTENT" FROM THE DISCORD DEVELOPER PORTAL
 
+async def timeoutCheck(self, e, ctx, msg):
+    def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
+        return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == e
+
+    try:
+        reaction, user = await self.wait_for(event = 'reaction_add', timeout=60.0, check=check)
+    except asyncio.TimeoutError:
+        await msg.delete()
+    else:
+        await msg.edit(embed = discord.Embed(title="Anime Recommender",
+        description="Done",
+        color=discord.Color.red()))
+
 class Search(commands.Bot):
   def __init__(self, command_prefix, self_bot):
     commands.Bot.__init__(self, command_prefix=command_prefix, self_bot=self_bot)
@@ -25,19 +38,6 @@ class MyBot(commands.Bot):
         self.message1 = "[INFO]: Bot now online"
         self.message2 = "Bot still online"
         self.add_commands()
-
-    async def timeoutCheck(self, e, ctx, msg):
-        def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
-            return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == e
-
-        try:
-            reaction, user = await self.wait_for(event = 'reaction_add', timeout=60.0, check=check)
-        except asyncio.TimeoutError:
-            await msg.delete()
-        else:
-            await msg.edit(embed = discord.Embed(title="Anime Recommender",
-            description="Done",
-            color=discord.Color.red()))
 
     def add_commands(self):
         @self.command()
@@ -70,7 +70,7 @@ class MyBot(commands.Bot):
             await msg.add_reaction('✔️')
             await msg.add_reaction('❌')
             emoji = '✔️'
-            self.timeoutCheck(self, emoji, ctx, msg)
+            timeoutCheck(self, emoji, ctx, msg)
 
     async def on_ready(self):
         print('We have logged in as {0.user}'.format(self))
