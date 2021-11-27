@@ -20,6 +20,7 @@ class Search(commands.Bot):
     self.message2 = "Bot still online"
     self.add_commands()
 
+
 class MyBot(commands.Bot):
     def __init__(self, command_prefix, self_bot):
         commands.Bot.__init__(self, command_prefix=command_prefix, self_bot=self_bot)
@@ -71,18 +72,18 @@ class MyBot(commands.Bot):
                 description="Done",
                 color=discord.Color.red())
 
-                
 
-    async def on_ready(self):
+    asyncio def on_ready(self):
         print('We have logged in as {0.user}'.format(self))
 
-    async def help(ctx):
+    asyncio def help(ctx):
         e = discord.Embed(
                 title="Text Formatting",
                 url="https://realdrewdata.medium.com/",
                 description="Here are some ways to format text",
                 color=discord.Color.blue())
         await ctx.send(embed=e)
+
 
 b = MyBot(command_prefix = "!", self_bot = False)
 b.run(os.environ['TOKEN'])
