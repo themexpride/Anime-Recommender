@@ -70,7 +70,7 @@ class MyBot(commands.Bot):
             await msg.add_reaction('✔️')
             await msg.add_reaction('❌')
             emoji = '✔️'
-            timeoutCheck(self, emoji, ctx, msg)
+            self.timeoutCheck(self, emoji, ctx, msg)
 
     async def on_ready(self):
         print('We have logged in as {0.user}'.format(self))
