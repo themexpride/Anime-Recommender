@@ -70,6 +70,8 @@ class MyBot(commands.Bot):
                 await msg.delete()
             else:
                 await msg.edit(embed = discord.Embed(title="Anime Recommender", description="Reacted", color=discord.Color.red()))
+                await reaction.remove
+
 
 
 
