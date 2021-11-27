@@ -26,6 +26,19 @@ class MyBot(commands.Bot):
         self.message2 = "Bot still online"
         self.add_commands()
 
+    def timeoutCheck(e=emoji, ctx, msg):
+        def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
+            return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == e
+
+        try:
+            reaction, user = await self.wait_for(event = 'reaction_add', timeout=60.0, check=check)
+        except asyncio.TimeoutError:
+            await msg.delete()
+        else:
+            await msg.edit(embed = discord.Embed(title="Anime Recommender",
+            description="Done",
+            color=discord.Color.red()))
+
     def add_commands(self):
         @self.command()
         async def embd(ctx):
@@ -56,19 +69,8 @@ class MyBot(commands.Bot):
             msg = await ctx.send(embed=e)
             await msg.add_reaction('✔️')
             await msg.add_reaction('❌')
-
-            def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
-                return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == '✔️'
-
-            try:
-                reaction, user = await self.wait_for(event = 'reaction_add', timeout=60.0, check=check)
-            except asyncio.TimeoutError:
-                await msg.delete()
-            else:
-                await msg.edit(embed = discord.Embed(title="Anime Recommender",
-                description="Done",
-                color=discord.Color.red()))
-
+            emoji = '✔️'
+            timeoutCheck(emoji, ctx, msg)
 
     async def on_ready(self):
         print('We have logged in as {0.user}'.format(self))
