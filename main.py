@@ -56,7 +56,7 @@ class MyBot(commands.Bot):
             await msg.add_reaction('✔️')
             await msg.add_reaction('❌')
 
-            def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
+            def check(reaction: discord.Reaction, u: Union([discord.Member, discord.User]):
                 return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == '✔️'
 
             try:
