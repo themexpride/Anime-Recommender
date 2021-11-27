@@ -60,17 +60,8 @@ class MyBot(commands.Bot):
             await msg.add_reaction('❌')
             emoji = '✔️'
 
-            def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
-                return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == e
 
-            try:
-                reaction, user = await self.wait_for(event = 'reaction_add', timeout=60.0, check=check)
-            except asyncio.TimeoutError:
-                await msg.delete()
-            else:
-                await msg.edit(embed = discord.Embed(title="Anime Recommender",
-                description="Done",
-                color=discord.Color.red())
+
 
     async def on_ready(self):
         print('We have logged in as {0.user}'.format(self))
