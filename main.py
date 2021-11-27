@@ -21,6 +21,10 @@ class Search(commands.Bot):
     self.add_commands()
 
 
+
+def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
+          return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == '✔️'
+
 class MyBot(commands.Bot):
     def __init__(self, command_prefix, self_bot):
         commands.Bot.__init__(self, command_prefix=command_prefix, self_bot=self_bot)
@@ -58,8 +62,14 @@ class MyBot(commands.Bot):
             msg = await ctx.send(embed=e)
             await msg.add_reaction('✔️')
             await msg.add_reaction('❌')
-            emoji = '✔️'
-
+            def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
+                      return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == '✔️'
+            try:
+                reaction, user = await self.wait_for(event = "reaction_add", timeout=60.0, check=check)
+            except asyncio.TimeoutError:
+                await msg.delete()
+            else:
+                await msg.edit(embeded = discord.Embed(title="Anime Recommender", description="Reacted", color=discord.Color.red()))
 
 
 
