@@ -72,11 +72,10 @@ class MyBot(commands.Bot):
                 description="Done",
                 color=discord.Color.red())
 
-
-    asyncio def on_ready(self):
+    async def on_ready(self):
         print('We have logged in as {0.user}'.format(self))
 
-    asyncio def help(ctx):
+    async def help(ctx):
         e = discord.Embed(
                 title="Text Formatting",
                 url="https://realdrewdata.medium.com/",
