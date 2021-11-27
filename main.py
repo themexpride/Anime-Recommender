@@ -24,6 +24,8 @@ class MyBot(commands.Bot):
         self.message2 = "Bot still online"
         self.add_commands()
 
+    d
+
     def add_commands(self):
         @self.command()
         async def embd(ctx):
@@ -42,14 +44,16 @@ class MyBot(commands.Bot):
           await ctx.send('Hello!')
 
         @self.command()
-        async def anirec(ctx):
+        async def anirec(ctx, emoji):
             activeUser = ctx.message.author
             e = discord.Embed(
                 title="Anime Recommender",
                 description="Please go fuck yourself",
                 color=discord.Color.red())
             e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
-            await ctx.send(embed=e)
+            msg = await ctx.send(embed=e)
+            await msg.add_reaction('✔️')
+            await msg.add_reaction('❌')
 
 
 
