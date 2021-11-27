@@ -42,7 +42,7 @@ class MyBot(commands.Bot):
           await ctx.send('Hello!')
 
         @self.command()
-        async def anirec(ctx, emoji):
+        async def anirec(ctx):
             activeUser = ctx.message.author
             e = discord.Embed(
                 title="Anime Recommender",
