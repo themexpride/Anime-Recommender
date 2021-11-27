@@ -69,7 +69,7 @@ class MyBot(commands.Bot):
             except asyncio.TimeoutError:
                 await msg.delete()
             else:
-                await msg.edit(embeded = discord.Embed(title="Anime Recommender", description="Reacted", color=discord.Color.red()))
+                await msg.edit(embed = discord.Embed(title="Anime Recommender", description="Reacted", color=discord.Color.red()))
 
 
 
