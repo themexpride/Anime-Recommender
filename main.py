@@ -2,7 +2,9 @@ import discord
 import os
 import token
 from discord.ext import commands
+import backend
 import csv
+import json
 
 #intents = discord.Intents.default()
 #intents.members = True
@@ -77,6 +79,19 @@ class MyBot(commands.Bot):
         @self.command()
         async def hello(ctx):
           await ctx.send('Hello!')
+
+        @self.command()
+        async def anirec(ctx):
+            animeChannel = self.get_channel(int(os.environ['CHANNEL_ID']))
+            if(ctx.message.author == self.user):
+                return
+            if(animeChannel == ctx.message.channel)
+                view = discord.ui.View()
+                item = discord.ui.Button(style=discord.ButtonStyle.blurple, label="Click Me", url="https://cdn0.iconfinder.com/data/icons/feather/96/591276-arrow-right-512.png")
+                view.add_item(item=item)
+                await ctx.send("This message has a button!", view=view)
+
+
 
     async def on_ready(self):
         print('We have logged in as {0.user}'.format(self))
