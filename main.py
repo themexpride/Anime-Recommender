@@ -1,6 +1,6 @@
 import discord
 import os
-from token import getDiscordToken
+from discordToken1 import *
 from discord.ext import commands
 import backend
 import csv
