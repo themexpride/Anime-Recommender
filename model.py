@@ -1,5 +1,6 @@
 import pandas as pd
 from tensorflow import keras
+from typing import *
 
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -27,6 +28,9 @@ class _Model:
     if id in self._model_to_data:
       return self._model_to_data[id]
     return -1
+
+  def predict(self, user_ratings: List[Tuple[int,int]]) -> List[str]:
+    return []
 
 def Model():
   if _Model._model is None:

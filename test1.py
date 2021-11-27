@@ -1,13 +1,36 @@
 from backend import Backend
 from model import Model
 
+testcount = 0
+testpass = 0
+testfailed = []
+
 b = Backend()
-assert(b._getIdFromName('Naruto') == 20)
-assert(b._getNameFromId(20) == 'Naruto')
+
+def testAnimeMap(name: str):
+  global testcount, testpass, testfailed
+  testcount += 1
+  if (name == b._getNameFromId(b._getIdFromName(name))):
+    testpass += 1
+  else:
+    testfailed += ["Anime Map - " + name]
+
+testAnimeMap('Naruto')
+testAnimeMap('Dragon Ball')
 
 m = Model()
-assert(m._dataToModel(20) == 5)
-assert(m._modelToData(5) == 20)
 
-print('All tests passed')
+def testRatingMap(id: int):
+  global testcount, testpass, testfailed
+  testcount += 1
+  if (id == m._dataToModel(m._modelToData(id))):
+    testpass += 1
+  else:
+    testfailed += ["Rating Map - " + str(id)]
 
+testRatingMap(10)
+testRatingMap(20)
+
+print('{} / {} tests passed'.format(testpass, testcount))
+if len(testfailed):
+  print(*testfailed, sep='\n')
