@@ -1,6 +1,5 @@
 import discord
 import os
-from discordToken1 import *
 from discord.ext import commands
 import backend
 import csv
@@ -66,6 +65,5 @@ class MyBot(commands.Bot):
                 color=discord.Color.blue())
         await ctx.send(embed=e)
 
-token1 = getDiscordToken()
 b = MyBot(command_prefix = "!", self_bot = False)
-b.run(token1)
+b.run(os.environ['TOKEN'])
