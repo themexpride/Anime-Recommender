@@ -66,6 +66,6 @@ class MyBot(commands.Bot):
                 color=discord.Color.blue())
         await ctx.send(embed=e)
 
-token = getDiscordToken()
+token1 = getDiscordToken()
 b = MyBot(command_prefix = "!", self_bot = False)
-b.run(token)
+b.run(token1)
