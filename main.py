@@ -26,7 +26,7 @@ class MyBot(commands.Bot):
         self.message2 = "Bot still online"
         self.add_commands()
 
-    async def timeoutCheck(e, ctx, msg):
+    async def timeoutCheck(self, e, ctx, msg):
         def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
             return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == e
 
@@ -70,7 +70,7 @@ class MyBot(commands.Bot):
             await msg.add_reaction('✔️')
             await msg.add_reaction('❌')
             emoji = '✔️'
-            self.timeoutCheck(emoji, ctx, msg)
+            timeoutCheck(self, emoji, ctx, msg)
 
     async def on_ready(self):
         print('We have logged in as {0.user}'.format(self))
