@@ -38,7 +38,7 @@ class _Backend:
     if new_list:
       return new_list[:10] #if results found, return top 10
     else:
-      return [] #handling none found
+      return ["No results found"] #handling none found
 
   #Implemented search function (returns id list) here
   def getSearchResultsInIDs(self, name: str) -> List[int]: 
@@ -47,7 +47,6 @@ class _Backend:
     if len(name_list) > 0:
       for i in name_list:
         results.append(self._getIdFromName(i))
-
     return results
 
   def query(self, id: int) -> List[str]:
@@ -58,7 +57,12 @@ class _Backend:
     user_ratings = []
     for i in user_animes:
       user_ratings.append( (i['id'], i['rating']) )
-    return _model.predict(user_ratings)
+    new_list = _model.predict(user_ratings)
+    results = []
+    for i in new_list:
+      results.append(self._getIdFromName(i))
+    if len(results) < 1: results += ["No results found"]
+    return results
 
 def Backend():
   if _Backend._backend is None:
