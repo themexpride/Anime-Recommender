@@ -12,7 +12,7 @@ from typing import Union
 #To gather server members from whatever server the bot is in
 #REQUIRES ENABLING "SERVER MEMBER INTENT" FROM THE DISCORD DEVELOPER PORTAL
 
-async def timeoutCheck(self, e, ctx, msg):
+def timeoutCheck(self, e, ctx, msg):
     def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
         return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == e
 
