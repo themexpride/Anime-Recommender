@@ -43,12 +43,13 @@ class MyBot(commands.Bot):
 
         @self.command()
         async def anirec(ctx):
-            if(ctx.message.author == self.user):
-                return
-            view = discord.ui.View()
-            item = discord.ui.Button(style=discord.ButtonStyle.blurple, label="Click Me", url="https://cdn0.iconfinder.com/data/icons/feather/96/591276-arrow-right-512.png")
-            view.add_item(item=item)
-            await ctx.send("This message has a button!", view=view)
+            activeUser = ctx.message.author
+            e = discord.Embed(
+                title="Anime Recommender",
+                description="Please go fuck yourself",
+                color=discord.Color.red())
+            e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+            await ctx.send(embed=e)
 
 
 
