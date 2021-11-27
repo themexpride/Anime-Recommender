@@ -4,6 +4,7 @@ from discord.ext import commands
 import backend
 import csv
 import json
+import asyncio
 
 #intents = discord.Intents.default()
 #intents.members = True
@@ -43,6 +44,8 @@ class MyBot(commands.Bot):
 
         @self.command()
         async def anirec(ctx):
+            i = 0
+            endMessage = 0
             activeUser = ctx.message.author
             e = discord.Embed(
                 title="Anime Recommender",
@@ -53,6 +56,17 @@ class MyBot(commands.Bot):
             await msg.add_reaction('✔️')
             await msg.add_reaction('❌')
 
+            def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
+                return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == '✔️'
+
+            try:
+                reaction, user = await self.wait_for(event = 'reaction_add', timeout=60.0, check=check)
+            except asyncio.TimeoutError:
+                await msg.delete()
+            else:
+                await msg.edit(embed = discord.Embed(title="Anime Recommender",
+                description="Done",
+                color=discord.Color.red()))
 
 
     async def on_ready(self):
