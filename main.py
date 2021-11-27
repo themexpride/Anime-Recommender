@@ -26,7 +26,7 @@ class MyBot(commands.Bot):
         self.message2 = "Bot still online"
         self.add_commands()
 
-    def timeoutCheck(e=emoji, ctx, msg):
+    def timeoutCheck(e, ctx, msg):
         def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
             return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == e
 
