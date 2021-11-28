@@ -72,7 +72,7 @@ class _Backend:
     if len(results) < 1: results += "No results found"
     ans = ""
     for i in range(len(results)):
-       ans += str(i)+". "+results[i]+"\n\n"
+       ans += str(i+1)+". "+results[i]+"\n\n"
     return ans
 
 def Backend():
