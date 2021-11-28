@@ -49,20 +49,31 @@ class _Backend:
         results.append(self._getIdFromName(i))
     return results
 
-  def query(self, id: int) -> List[str]:
-    user = db.find_one( {"id" : id } )
-    if user == None: return []
+  def query(self, id: int, count: int) -> str:
+    user = db.AniRecDBCol.find_one( {"id" : id } )
+    if user == None: return "User has not added any shows."
 
     user_animes = user['anime']
     user_ratings = []
+    user_anime_ids = []
     for i in user_animes:
       user_ratings.append( (i['id'], i['rating']) )
-    new_list = _model.predict(user_ratings)
+      user_anime_ids.append( i['id'] )
+
+    if len(user_anime_ids) < 5: return "User has not added enough shows."
+
+    animes_watched = pd.DataFrame(user_anime_ids)
+    animes_not_watched = self._animes[ ~self._animes["anime_id"].isin(user_anime_ids) ]["anime_id"]
+
+    new_list = Model().predict(id, count, user_ratings, animes_not_watched.tolist())
     results = []
     for i in new_list:
-      results.append(self._getIdFromName(i))
-    if len(results) < 1: results += ["No results found"]
-    return results
+      results.append(self._getNameFromId(i))
+    if len(results) < 1: results += "No results found"
+    ans = ""
+    for i in range(len(results)):
+       ans += str(i)+". "+results[i]+"\n\n"
+    return ans
 
 def Backend():
   if _Backend._backend is None:

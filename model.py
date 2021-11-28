@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from tensorflow import keras
 from typing import *
 
@@ -17,7 +18,7 @@ class _Model:
     self._model_to_data = { i: x for i, x in enumerate(anime_ids) }
 
     # load model
-    self._model = keras.models.load_model('temp_model')
+    self._model = keras.models.load_model('temp_model', compile = True)
 
   def _dataToModel(self, id: int) -> int:
     if id in self._data_to_model:
@@ -29,8 +30,18 @@ class _Model:
       return self._model_to_data[id]
     return -1
 
-  def predict(self, user_ratings: List[Tuple[int,int]]) -> List[str]:
-    return []
+  def predict(self, id: int, count: int, user_ratings: List[Tuple[int,int]], not_watched: List[int]) -> List[int]:
+    not_watched_model = []
+    for i in not_watched:
+      model_id = self._dataToModel(i)
+      if model_id != -1: not_watched_model += [[model_id]]
+
+    user_anime_array = np.hstack( ([[2]] * len(not_watched_model), not_watched_model) )
+
+    results = self._model.predict(user_anime_array).flatten()
+    top_result_model = results.argsort()[-1*count:][::-1]
+    top_result_data = [ self._modelToData(not_watched_model[i][0]) for i in top_result_model ]
+    return top_result_data
 
 def Model():
   if _Model._model is None:

@@ -72,8 +72,28 @@ class MyBot(commands.Bot):
                 await msg.edit(embed = discord.Embed(title="Anime Recommender", description="Reacted", color=discord.Color.red()))
                 await msg.remove_reaction('✔️', ctx.author)
 
-
-
+        @self.command()
+        async def getRec(ctx, arg):
+          count = 0
+          try:
+            count = int(arg)
+          except:
+            activeUser = ctx.message.author
+            e = discord.Embed(
+                title="Recommended Shows for you",
+                description="Insert valid number of shows",
+                color=discord.Color.red())
+            e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+            msg = await ctx.send(embed=e)
+          else:
+            result = backend.Backend().query(ctx.author.id, count)
+            activeUser = ctx.message.author
+            e = discord.Embed(
+                title="Recommended Shows for you",
+                description=result,
+                color=discord.Color.red())
+            e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+            msg = await ctx.send(embed=e)
 
     async def on_ready(self):
         print('We have logged in as {0.user}'.format(self))
