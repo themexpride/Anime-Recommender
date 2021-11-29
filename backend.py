@@ -32,11 +32,11 @@ class _Backend:
     return self._animes.loc[self._animes['anime_id'] == id]['name'].values[0]
   
   #Implemented search function (returns top10 name list) here
-  def getSearchResultsInNames(self, name: str) -> List[str]: 
+  def getSearchResultsInNames(self, name: str, count: int) -> List[str]: 
     new_list = [k for k in self._animes['name'].values if name.upper() in k.upper()]
     ans = ""
     if new_list:
-      return new_list #if results found, return top 10
+      return new_list[:count] #if results found, return top 10
     else:
       return ["No results found"] #handling none found error
 
@@ -50,9 +50,10 @@ class _Backend:
         results.append(self._getIdFromName(i))
     return results
   
-  def getSearchResultsInNameFormatHelper(self, list) -> str:
+  def getSearchResultsInNameFormatHelper(self, list: List[int]) -> str:
+    ans = ''
     for i in range(len(list)):
-      ans += str(i+1)+". "+new_list[i]+"\n\n"
+      ans += str(i+1)+". "+list[i]+"\n\n"
     return ans
 
   def query(self, id: int, count: int) -> str:

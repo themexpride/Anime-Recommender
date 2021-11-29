@@ -73,15 +73,17 @@ class MyBot(commands.Bot):
                 await msg.remove_reaction('✔️', ctx.author)
 
         @self.command()
-        async def getRec(ctx, arg):
+        async def getRec(ctx, *args):
           count = 0
           try:
-            count = int(arg)
+            if (len(args) == 0): count = 10
+            elif (len(args) == 1): count = int(args[0])
+            assert (count > 0 and count < 21)
           except:
             activeUser = ctx.message.author
             e = discord.Embed(
                 title="Recommended Shows for you",
-                description="Insert valid number of shows",
+                description="Insert valid number of shows (1 - 20)",
                 color=discord.Color.red())
             e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
             msg = await ctx.send(embed=e)
@@ -96,30 +98,35 @@ class MyBot(commands.Bot):
             msg = await ctx.send(embed=e)
 
         @self.command()
-        async def searchAnime(ctx, argAnime, argNum):
-            count = 0
-            try:
-                count = int(arg)
-            except:
-                activeUser = ctx.message.author
-                e = discord.Embed(
+        async def searchAnime(ctx, *args):
+          count = 0
+          searchString = ''
+          try:
+            assert(len(args)>1)
+            count = int(args[-1])
+            assert(count > 0 and count < 11)
+            searchString = ' '.join(args[:-1])
+          except:
+            activeUser = ctx.message.author
+            e = discord.Embed(
+                title = "Your Search Results",
+                description = "Insert valid number of search results (1-10)",
+                color = discord.Color.blue()
+                )
+            e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+            msg = await ctx.send(embed=e)
+          else:
+            back = backend.Backend()
+            result = back.getSearchResultsInNameFormatHelper(back.getSearchResultsInNames(searchString, count))
+            activeUser = ctx.message.author
+            e = discord.Embed(
                 title = "Your Search Results",
                 description = result,
                 color = discord.Color.blue()
                 )
-                e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
-                msg = await ctx.send(embed=e)
-            else:
-                result = backend.Backend().getSearchResultsInNamesFormatHelper(getSearchResultsInNames(argAnime, count))
-                activeUser = ctx.message.author
-                e = discord.Embed(
-                title = "Your Search Results",
-                description = result,
-                color = discord.Color.blue()
-                )
-                e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
-                msg = await ctx.send(embed=e
-        
+            e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+            msg = await ctx.send(embed=e)
+
     async def on_ready(self):
         print('We have logged in as {0.user}'.format(self))
 
