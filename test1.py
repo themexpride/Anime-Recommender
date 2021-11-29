@@ -7,6 +7,8 @@ testfailed = []
 
 b = Backend()
 
+print(b.query(366734715392360448, 10))
+
 def testAnimeMap(name: str):
   global testcount, testpass, testfailed
   testcount += 1

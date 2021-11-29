@@ -58,8 +58,6 @@ class _Backend:
 
   def query(self, id: int, count: int) -> str:
     user = db.AniRecDBCol.find_one( {'id' : id } )
-    print(type(user))
-    print(user)
     if user == None: return "User has not rated any shows."
 
     user_animes = user['anime']
@@ -74,7 +72,8 @@ class _Backend:
     animes_watched = pd.DataFrame(user_anime_ids)
     animes_not_watched = self._animes[ ~self._animes["anime_id"].isin(user_anime_ids) ]["anime_id"]
 
-    new_list = Model().predict(id, count, user_ratings, animes_not_watched.tolist())
+    new_list = Model().predict(count, user_ratings, animes_not_watched.tolist())
+
     results = []
     for i in new_list:
       results.append(self._getNameFromId(i))
@@ -84,7 +83,10 @@ class _Backend:
        ans += str(i+1)+". "+results[i]+"\n\n"
     return ans
 
-  def addOrUpdateShow(self, userid: int, showid: int, rating: int) -> str:
+  def addOrUpdateShow(self, userid: int, showname: str, rating: int) -> str:
+    showid = self._getIdFromName(showname)
+    if showid == -1:
+      return "Invalid show name"
     user = db.AniRecDBCol.find_one( {'id' : userid} )
     newShow = {'id': showid, 'rating': rating}
     if user == None:
@@ -102,7 +104,10 @@ class _Backend:
       db.AniRecDBCol.update_one( {'id': userid}, {"$set": {'anime': user_animes} } )
     return "Show rated successfully."
 
-  def deleteShow(self, userid: int, showid, int) -> str:
+  def deleteShow(self, userid: int, showname, str) -> str:
+    showid = self._getIdFromName(showname)
+    if showid == -1:
+      return "Invalid show name"
     user = db.AniRecDBCol.find_one( {'id' : userid} )
     if user == None:
       return "User has not rated any shows."
