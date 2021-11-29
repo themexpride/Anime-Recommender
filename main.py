@@ -78,12 +78,12 @@ class MyBot(commands.Bot):
           try:
             if (len(args) == 0): count = 10
             elif (len(args) == 1): count = int(args[0])
-            assert (count > 0 and count < 21)
+            assert (count > 0 and count < 16)
           except:
             activeUser = ctx.message.author
             e = discord.Embed(
                 title="Recommended Shows for you",
-                description="Insert valid number of shows (1 - 20)",
+                description="Insert valid number of shows (1 - 15)",
                 color=discord.Color.red())
             e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
             msg = await ctx.send(embed=e)
@@ -93,7 +93,7 @@ class MyBot(commands.Bot):
             e = discord.Embed(
                 title="Recommended Shows for you",
                 description=result,
-                color=discord.Color.red())
+                color=discord.Color.blue())
             e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
             msg = await ctx.send(embed=e)
 
@@ -111,7 +111,7 @@ class MyBot(commands.Bot):
             e = discord.Embed(
                 title = "Your Search Results",
                 description = "Insert valid number of search results (1-10)",
-                color = discord.Color.blue()
+                color = discord.Color.red()
                 )
             e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
             msg = await ctx.send(embed=e)
@@ -126,6 +126,15 @@ class MyBot(commands.Bot):
                 )
             e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
             msg = await ctx.send(embed=e)
+
+        @self.event
+        async def on_command_error(ctx, error):
+          e = discord.Embed(
+              title="Error",
+              description="Command not found. Please try again.",
+              color=discord.Color.red()
+              )
+          await ctx.send(embed=e)
 
     async def on_ready(self):
         print('We have logged in as {0.user}'.format(self))
