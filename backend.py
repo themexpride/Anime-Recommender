@@ -34,20 +34,25 @@ class _Backend:
   #Implemented search function (returns top10 name list) here
   def getSearchResultsInNames(self, name: str) -> List[str]: 
     new_list = [k for k in self._animes['name'].values if name.upper() in k.upper()]
-    
+    ans = ""
     if new_list:
-      return new_list[:10] #if results found, return top 10
+      return new_list #if results found, return top 10
+      for i in range(len(new_list)):
+       ans += str(i+1)+". "+new_list[i]+"\n\n"
     else:
-      return ["No results found"] #handling none found
+      return ["No results found"] #handling none found error
 
   #Implemented search function (returns id list) here
   def getSearchResultsInIDs(self, name: str) -> List[int]: 
     results = []
+    ans = ""
     name_list = self.getSearchResultsInNames(name)
     if len(name_list) > 0:
       for i in name_list:
         results.append(self._getIdFromName(i))
-    return results
+      for i in range(len(results)):
+       ans += str(i+1)+". "+results[i]+"\n\n"
+    return ans
 
   def query(self, id: int, count: int) -> str:
     user = db.AniRecDBCol.find_one( {"id" : id } )
