@@ -57,8 +57,10 @@ class _Backend:
     return ans
 
   def query(self, id: int, count: int) -> str:
-    user = db.AniRecDBCol.find_one( {"id" : id } )
-    if user == None: return "User has not added any shows."
+    user = db.AniRecDBCol.find_one( {'id' : id } )
+    print(type(user))
+    print(user)
+    if user == None: return "User has not rated any shows."
 
     user_animes = user['anime']
     user_ratings = []
@@ -67,7 +69,7 @@ class _Backend:
       user_ratings.append( (i['id'], i['rating']) )
       user_anime_ids.append( i['id'] )
 
-    if len(user_anime_ids) < 5: return "User has not added enough shows."
+    if len(user_anime_ids) < 5: return "User has not rated enough shows."
 
     animes_watched = pd.DataFrame(user_anime_ids)
     animes_not_watched = self._animes[ ~self._animes["anime_id"].isin(user_anime_ids) ]["anime_id"]
@@ -81,6 +83,38 @@ class _Backend:
     for i in range(len(results)):
        ans += str(i+1)+". "+results[i]+"\n\n"
     return ans
+
+  def addOrUpdateShow(self, userid: int, showid: int, rating: int) -> str:
+    user = db.AniRecDBCol.find_one( {'id' : userid} )
+    newShow = {'id': showid, 'rating': rating}
+    if user == None:
+      user = {'id':userrid, 'anime': [newShow]}
+      db.AniRecDBCol.insert_one( user )
+    else:
+      user_animes = user['anime']
+      user_anime_ids = {}
+      for i in range(len(user_animes)):
+        user_anime_ids[ user_animes[i]['id'] ] = i
+      if showid in user_anime_ids:
+        user_animes[user_anime_ids[showid]] = newShow
+        return "Show rating updated successfully."
+      user_animes.append(newShow)
+      db.AniRecDBCol.update_one( {'id': userid}, {"$set": {'anime': user_animes} } )
+    return "Show rated successfully."
+
+  def deleteShow(self, userid: int, showid, int) -> str:
+    user = db.AniRecDBCol.find_one( {'id' : userid} )
+    if user == None:
+      return "User has not rated any shows."
+    user_animes = user['anime']
+    user_anime_ids = {}
+    for i in range(len(user_animes)):
+      user_anime_ids[ user_animes[i]['id'] ] = i
+    if showid not in user_anime_ids:
+      return "User has not rated this show."
+    user_animes = user_animes.pop(user_anime_ids[showid])
+    db.AniRecDBCol.update_one( {'id': userid}, {"$set": {'anime': user_animes} } )
+    return "Show deleted successfully."
 
 def Backend():
   if _Backend._backend is None:

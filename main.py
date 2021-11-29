@@ -137,12 +137,12 @@ class MyBot(commands.Bot):
               color=discord.Color.gold()
               )
           e.add_field(
-              name="searchAnime <search query> <# of results (1-10)>",
+              name="!searchAnime <search query> <# of results (1-10)>",
               value="Use this command to search for animes.",
               inline=False
           )
           e.add_field(
-              name="getRec <# of recommendations (1-15)>",
+              name="!getRec <# of recommendations (1-15)>",
               value="Use this command to get recommendations.",
               inline=False
           )
