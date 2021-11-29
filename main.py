@@ -21,13 +21,9 @@ class Search(commands.Bot):
     self.add_commands()
 
 
-
-def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
-          return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == '✔️'
-
 class MyBot(commands.Bot):
     def __init__(self, command_prefix, self_bot):
-        commands.Bot.__init__(self, command_prefix=command_prefix, self_bot=self_bot)
+        commands.Bot.__init__(self, command_prefix=command_prefix, self_bot=self_bot, help_command=None)
         self.message1 = "[INFO]: Bot now online"
         self.message2 = "Bot still online"
         self.add_commands()
@@ -44,10 +40,6 @@ class MyBot(commands.Bot):
             e.set_author(name=activeUser, url='https://github.com/themexpride',icon_url=activeUser.avatar_url)
             e.set_image(url='https://us.rule34.xxx//images/4608/1603d38255486b28981da501b0da5801.jpeg?5249040')
             await ctx.send(embed=e)
-
-        @self.command()
-        async def hello(ctx):
-          await ctx.send('Hello!')
 
         @self.command()
         async def anirec(ctx):
@@ -129,23 +121,37 @@ class MyBot(commands.Bot):
 
         @self.event
         async def on_command_error(ctx, error):
+          activeUser = ctx.message.author
           e = discord.Embed(
               title="Error",
-              description="Command not found. Please try again.",
+              description="Command not found. Please try again. Use !help to view a list of valid commands.",
               color=discord.Color.red()
               )
+          e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+          await ctx.send(embed=e)
+
+        @self.command()
+        async def help(ctx):
+          e = discord.Embed(
+              title="Commands",
+              color=discord.Color.gold()
+              )
+          e.add_field(
+              name="searchAnime <search query> <# of results (1-10)>",
+              value="Use this command to search for animes.",
+              inline=False
+          )
+          e.add_field(
+              name="getRec <# of recommendations (1-15)>",
+              value="Use this command to get recommendations.",
+              inline=False
+          )
+          anime_url = "https://us.rule34.xxx//images/4608/1603d38255486b28981da501b0da5801.jpeg?5249040"
+          e.set_author(name="Anime Recommender", icon_url=anime_url)
           await ctx.send(embed=e)
 
     async def on_ready(self):
         print('We have logged in as {0.user}'.format(self))
-
-    async def help(ctx):
-        e = discord.Embed(
-                title="Text Formatting",
-                url="https://realdrewdata.medium.com/",
-                description="Here are some ways to format text",
-                color=discord.Color.blue())
-        await ctx.send(embed=e)
 
 
 b = MyBot(command_prefix = "!", self_bot = False)
