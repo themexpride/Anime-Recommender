@@ -96,16 +96,29 @@ class MyBot(commands.Bot):
             msg = await ctx.send(embed=e)
 
         @self.command()
-        async def searchAnime(ctx, arg):
-            result = backend.Backend().getSearchResultsInNames(arg)
-            activeUser = ctx.message.author
-            e = discord.Embed(
-            title = "Your Search Results",
-            description = result,
-            color = discord.Color.blue()
-            )
-            e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
-            msg = await ctx.send(embed=e)
+        async def searchAnime(ctx, argAnime, argNum):
+            count = 0
+            try:
+                count = int(arg)
+            except:
+                activeUser = ctx.message.author
+                e = discord.Embed(
+                title = "Your Search Results",
+                description = result,
+                color = discord.Color.blue()
+                )
+                e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+                msg = await ctx.send(embed=e)
+            else:
+                result = backend.Backend().getSearchResultsInNamesFormatHelper(getSearchResultsInNames(argAnime, count))
+                activeUser = ctx.message.author
+                e = discord.Embed(
+                title = "Your Search Results",
+                description = result,
+                color = discord.Color.blue()
+                )
+                e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+                msg = await ctx.send(embed=e
         
     async def on_ready(self):
         print('We have logged in as {0.user}'.format(self))

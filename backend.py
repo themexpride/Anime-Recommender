@@ -37,8 +37,6 @@ class _Backend:
     ans = ""
     if new_list:
       return new_list #if results found, return top 10
-      for i in range(len(new_list)):
-       ans += str(i+1)+". "+new_list[i]+"\n\n"
     else:
       return ["No results found"] #handling none found error
 
@@ -50,8 +48,11 @@ class _Backend:
     if len(name_list) > 0:
       for i in name_list:
         results.append(self._getIdFromName(i))
-      for i in range(len(results)):
-       ans += str(i+1)+". "+results[i]+"\n\n"
+    return results
+  
+  def getSearchResultsInNameFormatHelper(self, list) -> str:
+    for i in range(len(list)):
+      ans += str(i+1)+". "+new_list[i]+"\n\n"
     return ans
 
   def query(self, id: int, count: int) -> str:
