@@ -116,7 +116,7 @@ class MyBot(commands.Bot):
                if (reaction.emoji == echeck):
                  # save show name
                  await msg.clear_reactions()
-                 await msg.edit(embed = discord.Embed(title = "Confirmed show name. What would you rate this show?", color=discord.Color.blue()))
+                 await msg.edit(embed = discord.Embed(title = "Confirmed show name. What would you rate this show?", description = "Please wait for all reactions (1-10) to appear.", color=discord.Color.blue()))
                  for i in range(10):
                    await msg.add_reaction(emojis[i])
 
@@ -129,6 +129,9 @@ class MyBot(commands.Bot):
                    print(user_rating)
                    finalconf = backend.Backend().addOrUpdateShow(ctx.author.id, showname, user_rating)
                    await msg.edit(embed = discord.Embed(title = "Confirmed rating.", description = finalconf, color=discord.Color.blue()))
+                   await msg.clear_reactions()
+                   await asyncio.sleep(90)
+                   await msg.delete()
                else:
                  await msg.edit(embed = discord.Embed(title = "Sorry!", description = "You can run our bot again anytime", color=discord.Color.red()))
                  await asyncio.sleep(5)
