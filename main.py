@@ -35,19 +35,45 @@ class MyBot(commands.Bot):
             e = discord.Embed(
                 title="Zero Two",
                 url="https://us.rule34.xxx//images/4608/1603d38255486b28981da501b0da5801.jpeg?5249040",
-                description="Anime girls will only fall for PD", #SHEEEEEESH
+                description="Anime girls hate PD cause he's late to class", #SHEEEEEESH
                 color=discord.Color.blue())
             e.set_author(name=activeUser, url='https://github.com/themexpride',icon_url=activeUser.avatar_url)
             e.set_image(url='https://us.rule34.xxx//images/4608/1603d38255486b28981da501b0da5801.jpeg?5249040')
             await ctx.send(embed=e)
 
         @self.command()
-        async def anirec(ctx):
+        async def addOrUpdateAnime(ctx, *args):
             i = 0
             endMessage = 0
-            activeUser = ctx.message.author
+            count = 0
+            searchString = ''
+            try:
+              assert(len(args)>1)
+              count = int(args[-1])
+              assert(count > 0 and count < 11)
+              searchString = ' '.join(args[:-1])
+            except:
+              activeUser = ctx.message.author
+              e = discord.Embed(
+                title = "Your Search Results",
+                description = "Anime not found.",
+                color = discord.Color.red()
+                )
+              e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+              msg = await ctx.send(embed=e)
+            else:
+              back = backend.Backend()
+              result = back.getSearchResultsInNameFormatHelper(back.getSearchResultsInNames(searchString, count))
+              activeUser = ctx.message.author
+              e = discord.Embed(
+                title = "Your Search Results",
+                description = result,
+                color = discord.Color.blue()
+                )
+              e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+              msg = await ctx.send(embed=e)
             e = discord.Embed(
-                title="Anime Recommender",
+                title="Add/Update Anime",
                 description="Please go fuck yourself",
                 color=discord.Color.red())
             e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
@@ -138,12 +164,22 @@ class MyBot(commands.Bot):
               )
           e.add_field(
               name="!searchAnime <search query> <# of results (1-10)>",
-              value="Use this command to search for animes.",
+              value="Use this command to search for an anime in our database. Specify the command, a search query, and the number (1-10) of results you want generated.",
               inline=False
           )
           e.add_field(
               name="!getRec <# of recommendations (1-15)>",
-              value="Use this command to get recommendations.",
+              value="Use this command to get a specified number of recommendations from your anime list. Specify the command and the number (1-15) of results you want generated. ",
+              inline=False
+           )
+          e.add_field(
+              name="!addOrUpdateAnime <show name>",
+              value="Use this command to add a show or update a show's rating. Specify the command and the show name to search in our database and your anime list to then add to your list or update. Once the bot has the show, it adds/updates a show's rating when you click on the numbered reactions (1-10).",
+              inline=False
+          )
+          e.add_field(
+              name="!deleteAnime <show name>",
+              value="Use this command to delete a show from your anime list. Specify the command and the show name to search in your anime list and delete it.",
               inline=False
           )
           anime_url = "https://us.rule34.xxx//images/4608/1603d38255486b28981da501b0da5801.jpeg?5249040"
