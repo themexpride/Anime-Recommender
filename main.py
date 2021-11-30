@@ -46,32 +46,50 @@ class MyBot(commands.Bot):
             i = 0
             endMessage = 0
             count = 0
-            searchString = ''
+            e = discord.Embed(title = "Searching for your anime", description = "tick tock", color = discord.Color.green())
+            msg = await ctx.send(embed=e)
+            def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
+                      return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == '✔️'
             try:
-              assert(len(args)>1)
-              count = int(args[-1])
-              assert(count > 0 and count < 11)
-              searchString = ' '.join(args[:-1])
-            except:
-              activeUser = ctx.message.author
-              e = discord.Embed(
-                title = "Your Search Results",
-                description = "Anime not found.",
-                color = discord.Color.red()
-                )
-              e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
-              msg = await ctx.send(embed=e)
+                reaction, user = await self.wait_for(event = "reaction_add", timeout=5.0, check=check)
+            except asyncio.TimeoutError:
+                await msg.edit(e = discord.Embed(
+                    title = "Your Search Results",
+                    description = "Anime not found.",
+                    color = discord.Color.red()
+                    ))
             else:
-              back = backend.Backend()
-              result = back.getSearchResultsInNameFormatHelper(back.getSearchResultsInNames(searchString, count))
-              activeUser = ctx.message.author
-              e = discord.Embed(
-                title = "Your Search Results",
-                description = result,
-                color = discord.Color.blue()
-                )
-              e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
-              msg = await ctx.send(embed=e)
+                await msg.edit(embed = discord.Embed(title="Anime Recommender", description="Reacted", color=discord.Color.red()))
+                await msg.remove_reaction('✔️', ctx.author)
+            searchString = ''
+            while(i == 0):
+                try:
+                  assert(len(args)>1)
+                  count = int(args[-1])
+                  assert(count > 0 and count < 11)
+                  searchString = ' '.join(args[:-1])
+                except:
+                  activeUser = ctx.message.author
+                  e = discord.Embed(
+                    title = "Your Search Results",
+                    description = "Anime not found.",
+                    color = discord.Color.red()
+                    )
+                  e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+                  msg = await ctx.send(embed=e)
+                else:
+                  back = backend.Backend()
+                  result = back.getSearchResultsInNameFormatHelper(back.getSearchResultsInNames(searchString, count))
+                  activeUser = ctx.message.author
+                  msg.edit(e = discord.Embed(
+                    title = "Your Search Results",
+                    description = result,
+                    color = discord.Color.blue()
+                    ))
+                  e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+                  msg = await ctx.send(embed=e)
+                  break
+            }
             e = discord.Embed(
                 title="Add/Update Anime",
                 description="Please go fuck yourself",
@@ -80,15 +98,15 @@ class MyBot(commands.Bot):
             msg = await ctx.send(embed=e)
             await msg.add_reaction('✔️')
             await msg.add_reaction('❌')
-            def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
-                      return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == '✔️'
-            try:
-                reaction, user = await self.wait_for(event = "reaction_add", timeout=60.0, check=check)
-            except asyncio.TimeoutError:
-                await msg.delete()
-            else:
-                await msg.edit(embed = discord.Embed(title="Anime Recommender", description="Reacted", color=discord.Color.red()))
-                await msg.remove_reaction('✔️', ctx.author)
+            #def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
+            #          return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == '✔️'
+            #try:
+            #    reaction, user = await self.wait_for(event = "reaction_add", timeout=60.0, check=check)
+            #except asyncio.TimeoutError:
+            #    await msg.delete()
+            #else:
+            #    await msg.edit(embed = discord.Embed(title="Anime Recommender", description="Reacted", color=discord.Color.red()))
+            #    await msg.remove_reaction('✔️', ctx.author)
 
         @self.command()
         async def getRec(ctx, *args):
