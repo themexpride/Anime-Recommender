@@ -7,7 +7,11 @@ testfailed = []
 
 b = Backend()
 
-print(b.query(366734715392360448, 10))
+# print(b.query(366734715392360448, 10))
+
+print(b.addOrUpdateShow(366734715392360448, "Kimi no Na wa.", 1))
+print(b.addOrUpdateShow(366734715392360448, "Initial D Fourth Stage", 1))
+
 
 def testAnimeMap(name: str):
   global testcount, testpass, testfailed

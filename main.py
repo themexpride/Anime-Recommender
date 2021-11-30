@@ -6,6 +6,7 @@ import csv
 import json
 import asyncio
 from typing import Union
+import emoji
 
 #intents = discord.Intents.default()
 #intents.members = True
@@ -33,20 +34,18 @@ class MyBot(commands.Bot):
             await ctx.send(embed=e)
 
         @self.command()
-        async def addOrUpdateAnime(ctx, *args):
+        async def rateAnime(ctx, *args):
             i = 0
             endMessage = 0
-            count = 0
             e = discord.Embed(title = "Searching for your anime", description = "tick tock", color = discord.Color.green())
             msg = await ctx.send(embed=e)
             await asyncio.sleep(3)
             searchString = ''
+            result_names = []
             while(i < 10):
                 try:
-                  assert(len(args)>1)
-                  count = int(args[-1])
-                  assert(count > 0 and count < 11)
-                  searchString = ' '.join(args[:-1])
+                  assert(len(args)>0)
+                  searchString = ' '.join(args)
                 except:
                   activeUser = ctx.message.author
                   e = discord.Embed(
@@ -59,7 +58,8 @@ class MyBot(commands.Bot):
                   i = i+1
                 else:
                   back = backend.Backend()
-                  result = back.getSearchResultsInNameFormatHelper(back.getSearchResultsInNames(searchString, count))
+                  result_names = back.getSearchResultsInNames(searchString, 5)
+                  result = back.getSearchResultsInNameFormatHelper(result_names)
                   activeUser = ctx.message.author
                   e = discord.Embed(
                       title = "Please choose from the following shows",
@@ -69,29 +69,70 @@ class MyBot(commands.Bot):
                   e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
                   await msg.edit(embed = e)
                   break
-            if(i == 10):
+            if('No results found' in result_names[0] or i == 10):
               await msg.edit(embed = discord.Embed(title = "Error", description = "You have searched for shows not in our database. Please add a show in our database next time.", color = discord.Color.red()))
               await asyncio.sleep(5)
               await msg.delete()
               return
-            await asyncio.sleep(3)
-            e = discord.Embed(
-                title="Add/Update Anime",
-                description="Please go fuck yourself",
-                color=discord.Color.red())
-            e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
-            await msg.edit(embed=e)
-            await msg.add_reaction('✔️')
-            await msg.add_reaction('❌')
-            #def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
-            #          return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == '✔️'
-            #try:
-            #    reaction, user = await self.wait_for(event = "reaction_add", timeout=60.0, check=check)
-            #except asyncio.TimeoutError:
-            #    await msg.delete()
-            #else:
-            #    await msg.edit(embed = discord.Embed(title="Anime Recommender", description="Reacted", color=discord.Color.red()))
-            #    await msg.remove_reaction('✔️', ctx.author)
+
+            eone = '1\U000020e3'
+            etwo = '2\U000020e3'
+            ethree  = '3\U000020e3'
+            efour = '4\U000020e3'
+            efive = '5\U000020e3'
+            esix = '6\U000020e3'
+            eseven = '7\U000020e3'
+            eeight = '8\U000020e3'
+            enine = '9\U000020e3'
+            eten = '\U0001f51f'
+            echeck = '\U00002705'
+            ecross = '\U0000274c'
+
+            emojis = [eone,etwo,ethree,efour,efive,esix,eseven,eeight,enine,eten,echeck,ecross]
+            for i in range(len(result_names)):
+              await msg.add_reaction(emojis[i])
+
+            def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
+              return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) in emojis
+
+            showname = ''
+            try:
+              reaction, user = await self.wait_for(event = "reaction_add", timeout=90.0, check=check)
+            except asyncio.TimeoutError:
+              await msg.delete()
+            else:
+              # use discord reaction to get show name
+              showname = result_names[emojis.index(reaction.emoji)]
+              await msg.clear_reactions()
+              await msg.edit(embed = discord.Embed(title = "Is this your show", description=showname, color=discord.Color.blue()))
+              await msg.add_reaction(emojis[10])
+              await msg.add_reaction(emojis[11])
+
+            try:
+              reaction, user = await self.wait_for(event = "reaction_add", timeout = 90.0, check=check)
+            except asyncio.TimeoutError:
+              await msg.delete()
+            else:
+               if (reaction.emoji == echeck):
+                 # save show name
+                 await msg.clear_reactions()
+                 await msg.edit(embed = discord.Embed(title = "Confirmed show name. What would you rate this show?", color=discord.Color.blue()))
+                 for i in range(10):
+                   await msg.add_reaction(emojis[i])
+
+                 try:
+                   reaction, user = await self.wait_for(event = "reaction_add", timeout=90.0, check=check)
+                 except asyncio.TimeoutError:
+                   await msg.delete()
+                 else:
+                   user_rating = emojis.index(reaction.emoji)+1
+                   print(user_rating)
+                   finalconf = backend.Backend().addOrUpdateShow(ctx.author.id, showname, user_rating)
+                   await msg.edit(embed = discord.Embed(title = "Confirmed rating.", description = finalconf, color=discord.Color.blue()))
+               else:
+                 await msg.edit(embed = discord.Embed(title = "Sorry!", description = "You can run our bot again anytime", color=discord.Color.red()))
+                 await asyncio.sleep(5)
+                 await msg.delete()
 
         @self.command()
         async def getRec(ctx, *args):
@@ -176,12 +217,12 @@ class MyBot(commands.Bot):
               inline=False
            )
           e.add_field(
-              name="!addOrUpdateAnime <show name>",
+              name="!rateAnime <show name>",
               value="Use this command to add a show or update a show's rating. Specify the command and the show name to search in our database and your anime list to then add to your list or update. Once the bot has the show, it adds/updates a show's rating when you click on the numbered reactions (1-10).",
               inline=False
           )
           e.add_field(
-              name="!deleteAnime <show name>",
+              name="!deleteRating <show name>",
               value="Use this command to delete a show from your anime list. Specify the command and the show name to search in your anime list and delete it.",
               inline=False
           )

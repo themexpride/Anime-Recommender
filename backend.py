@@ -84,13 +84,13 @@ class _Backend:
     return ans
 
   def addOrUpdateShow(self, userid: int, showname: str, rating: int) -> str:
-    showid = self._getIdFromName(showname)
+    showid = int(self._getIdFromName(showname))
     if showid == -1:
       return "Invalid show name"
     user = db.AniRecDBCol.find_one( {'id' : userid} )
     newShow = {'id': showid, 'rating': rating}
     if user == None:
-      user = {'id':userrid, 'anime': [newShow]}
+      user = {'id':userid, 'anime': [newShow]}
       db.AniRecDBCol.insert_one( user )
     else:
       user_animes = user['anime']
@@ -98,10 +98,10 @@ class _Backend:
       for i in range(len(user_animes)):
         user_anime_ids[ user_animes[i]['id'] ] = i
       if showid in user_anime_ids:
-        user_animes[user_anime_ids[showid]] = newShow
+        db.AniRecDBCol.update_one({'id':userid, 'anime.id':showid},{"$set":{"anime.$.rating":rating}})
         return "Show rating updated successfully."
-      user_animes.append(newShow)
-      db.AniRecDBCol.update_one( {'id': userid}, {"$set": {'anime': user_animes} } )
+      print(newShow)
+      db.AniRecDBCol.update_one( {'id': userid}, {"$push": {"anime": newShow} } )
     return "Show rated successfully."
 
   def deleteShow(self, userid: int, showname, str) -> str:
