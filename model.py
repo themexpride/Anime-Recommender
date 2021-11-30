@@ -21,7 +21,7 @@ class _Model:
     self._users = len(user_ids)
 
     # load model
-    self._model = keras.models.load_model('temp_model')
+    self._model = keras.models.load_model('80_64_5epoch_model')
 
   def _dataToModel(self, id: int) -> int:
     if id in self._data_to_model:
