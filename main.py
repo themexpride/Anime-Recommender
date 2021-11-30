@@ -6,7 +6,6 @@ import csv
 import json
 import asyncio
 from typing import Union
-import emoji
 
 #intents = discord.Intents.default()
 #intents.members = True
@@ -21,17 +20,17 @@ class MyBot(commands.Bot):
         self.add_commands()
 
     def add_commands(self):
-        @self.command()
-        async def embd(ctx):
-            activeUser = ctx.message.author
-            e = discord.Embed(
-                title="Zero Two",
-                url="https://us.rule34.xxx//images/4608/1603d38255486b28981da501b0da5801.jpeg?5249040",
-                description="Anime girls hate PD cause he's late to class", #SHEEEEEESH
-                color=discord.Color.blue())
-            e.set_author(name=activeUser, url='https://github.com/themexpride',icon_url=activeUser.avatar_url)
-            e.set_image(url='https://us.rule34.xxx//images/4608/1603d38255486b28981da501b0da5801.jpeg?5249040')
-            await ctx.send(embed=e)
+#        @self.command()
+#        async def embd(ctx):
+#            activeUser = ctx.message.author
+#            e = discord.Embed(
+#                title="Zero Two",
+#                url="https://us.rule34.xxx//images/4608/1603d38255486b28981da501b0da5801.jpeg?5249040",
+#                description="Anime girls hate PD cause he's late to class", #SHEEEEEESH
+#                color=discord.Color.blue())
+#            e.set_author(name=activeUser, url='https://github.com/themexpride',icon_url=activeUser.avatar_url)
+#            e.set_image(url='https://us.rule34.xxx//images/4608/1603d38255486b28981da501b0da5801.jpeg?5249040')
+#            await ctx.send(embed=e)
 
         @self.command()
         async def rateAnime(ctx, *args):
@@ -104,7 +103,7 @@ class MyBot(commands.Bot):
               # use discord reaction to get show name
               showname = result_names[emojis.index(reaction.emoji)]
               await msg.clear_reactions()
-              await msg.edit(embed = discord.Embed(title = "Is this your show", description=showname, color=discord.Color.blue()))
+              await msg.edit(embed = discord.Embed(title = "Is this your show?", description=showname, color=discord.Color.blue()))
               await msg.add_reaction(emojis[10])
               await msg.add_reaction(emojis[11])
 
@@ -126,7 +125,6 @@ class MyBot(commands.Bot):
                    await msg.delete()
                  else:
                    user_rating = emojis.index(reaction.emoji)+1
-                   print(user_rating)
                    finalconf = backend.Backend().addOrUpdateShow(ctx.author.id, showname, user_rating)
                    await msg.edit(embed = discord.Embed(title = "Confirmed rating.", description = finalconf, color=discord.Color.blue()))
                    await msg.clear_reactions()
@@ -138,6 +136,26 @@ class MyBot(commands.Bot):
                  await msg.delete()
 
         @self.command()
+        async def showRatings(ctx):
+          activeUser = ctx.message.author
+          result = backend.Backend().viewShows(ctx.author.id)
+          table = ""
+          for i in range(len(result)):
+            table += "• **"+result[i][0]+":** " + result[i][1] + "\n\n"
+          output = f"{table}"
+          e = discord.Embed(
+              title="Your show ratings:",
+              description=output,
+              color=discord.Color.blue()
+              )
+          e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+          await ctx.send(embed=e)
+
+        @self.command()
+        async def deleteRating(ctx, *args):
+          activeUser = ctx.message.author
+
+        @self.command()
         async def getRec(ctx, *args):
           count = 0
           try:
@@ -147,7 +165,7 @@ class MyBot(commands.Bot):
           except:
             activeUser = ctx.message.author
             e = discord.Embed(
-                title="Recommended Shows for you",
+                title="Recommended shows for you",
                 description="Insert valid number of shows (1 - 15)",
                 color=discord.Color.red())
             e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
@@ -156,7 +174,7 @@ class MyBot(commands.Bot):
             result = backend.Backend().query(ctx.author.id, count)
             activeUser = ctx.message.author
             e = discord.Embed(
-                title="Recommended Shows for you",
+                title="Recommended shows for you",
                 description=result,
                 color=discord.Color.blue())
             e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
@@ -194,6 +212,7 @@ class MyBot(commands.Bot):
 
         @self.event
         async def on_command_error(ctx, error):
+          print(error)
           activeUser = ctx.message.author
           e = discord.Embed(
               title="Error",

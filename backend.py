@@ -83,6 +83,15 @@ class _Backend:
        ans += str(i+1)+". "+results[i]+"\n\n"
     return ans
 
+  def viewShows(self, userid: int) -> List[List[str]]:
+    user = db.AniRecDBCol.find_one( {'id':userid} )
+    if user == None: return []
+    user_animes = user['anime']
+    ans = []
+    for i in range(len(user_animes)):
+      ans += [[self._getNameFromId(user_animes[i]['id']), str(user_animes[i]['rating'])]]
+    return ans
+
   def addOrUpdateShow(self, userid: int, showname: str, rating: int) -> str:
     showid = int(self._getIdFromName(showname))
     if showid == -1:
