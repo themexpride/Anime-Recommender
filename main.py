@@ -70,11 +70,11 @@ class MyBot(commands.Bot):
                   await msg.edit(embed = e)
                   break
             if(i == 10):
-              await msg.edit(embed = discord.Embed(title = "Error", description = "You have searched for shows not in our database. Please add a show in our database next time.", color = discord.Color.red())
+              await msg.edit(embed = discord.Embed(title = "Error", description = "You have searched for shows not in our database. Please add a show in our database next time.", color = discord.Color.red()))
               await asyncio.sleep(5)
               await msg.delete()
               return
-            await asyncio.sleep(3) 
+            await asyncio.sleep(3)
             e = discord.Embed(
                 title="Add/Update Anime",
                 description="Please go fuck yourself",
