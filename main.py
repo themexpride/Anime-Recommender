@@ -12,15 +12,6 @@ from typing import Union
 #To gather server members from whatever server the bot is in
 #REQUIRES ENABLING "SERVER MEMBER INTENT" FROM THE DISCORD DEVELOPER PORTAL
 
-
-class Search(commands.Bot):
-  def __init__(self, command_prefix, self_bot):
-    commands.Bot.__init__(self, command_prefix=command_prefix, self_bot=self_bot)
-    self.message1 = "[INFO]: Bot now online"
-    self.message2 = "Bot still online"
-    self.add_commands()
-
-
 class MyBot(commands.Bot):
     def __init__(self, command_prefix, self_bot):
         commands.Bot.__init__(self, command_prefix=command_prefix, self_bot=self_bot, help_command=None)
@@ -48,21 +39,9 @@ class MyBot(commands.Bot):
             count = 0
             e = discord.Embed(title = "Searching for your anime", description = "tick tock", color = discord.Color.green())
             msg = await ctx.send(embed=e)
-            def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
-                      return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) == '✔️'
-            try:
-                reaction, user = await self.wait_for(event = "reaction_add", timeout=5.0, check=check)
-            except asyncio.TimeoutError:
-                await msg.edit(e = discord.Embed(
-                    title = "Your Search Results",
-                    description = "Anime not found.",
-                    color = discord.Color.red()
-                    ))
-            else:
-                await msg.edit(embed = discord.Embed(title="Anime Recommender", description="Reacted", color=discord.Color.red()))
-                await msg.remove_reaction('✔️', ctx.author)
+            await asyncio.sleep(3)
             searchString = ''
-            while(i == 0):
+            while(i < 10):
                 try:
                   assert(len(args)>1)
                   count = int(args[-1])
@@ -76,26 +55,32 @@ class MyBot(commands.Bot):
                     color = discord.Color.red()
                     )
                   e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
-                  msg = await ctx.send(embed=e)
+                  await msg.edit(embed=e)
+                  i = i+1
                 else:
                   back = backend.Backend()
                   result = back.getSearchResultsInNameFormatHelper(back.getSearchResultsInNames(searchString, count))
                   activeUser = ctx.message.author
-                  msg.edit(e = discord.Embed(
-                    title = "Your Search Results",
-                    description = result,
-                    color = discord.Color.blue()
-                    ))
+                  e = discord.Embed(
+                      title = "Please choose from the following shows",
+                      description = result,
+                      color = discord.Color.blue()
+                      )
                   e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
-                  msg = await ctx.send(embed=e)
+                  await msg.edit(embed = e)
                   break
-            }
+            if(i == 10):
+              await msg.edit(embed = discord.Embed(title = "Error", description = "You have searched for shows not in our database. Please add a show in our database next time.", color = discord.Color.red())
+              await asyncio.sleep(5)
+              await msg.delete()
+              return
+            await asyncio.sleep(3) 
             e = discord.Embed(
                 title="Add/Update Anime",
                 description="Please go fuck yourself",
                 color=discord.Color.red())
             e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
-            msg = await ctx.send(embed=e)
+            await msg.edit(embed=e)
             await msg.add_reaction('✔️')
             await msg.add_reaction('❌')
             #def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
