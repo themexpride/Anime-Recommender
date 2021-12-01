@@ -19,6 +19,7 @@ class MyBot(commands.Bot):
         self.message2 = "Bot still online"
         self.add_commands()
 
+
     def add_commands(self):
 #        @self.command()
 #        async def embd(ctx):
@@ -34,45 +35,6 @@ class MyBot(commands.Bot):
 
         @self.command()
         async def rateAnime(ctx, *args):
-            i = 0
-            endMessage = 0
-            e = discord.Embed(title = "Searching for your anime", description = "tick tock", color = discord.Color.green())
-            msg = await ctx.send(embed=e)
-            await asyncio.sleep(3)
-            searchString = ''
-            result_names = []
-            while(i < 10):
-                try:
-                  assert(len(args)>0)
-                  searchString = ' '.join(args)
-                except:
-                  activeUser = ctx.message.author
-                  e = discord.Embed(
-                    title = "Your Search Results",
-                    description = "Anime not found.",
-                    color = discord.Color.red()
-                    )
-                  e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
-                  await msg.edit(embed=e)
-                  i = i+1
-                else:
-                  back = backend.Backend()
-                  result_names = back.getSearchResultsInNames(searchString, 5)
-                  result = back.getSearchResultsInNameFormatHelper(result_names)
-                  activeUser = ctx.message.author
-                  e = discord.Embed(
-                      title = "Please choose from the following shows",
-                      description = result,
-                      color = discord.Color.blue()
-                      )
-                  e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
-                  await msg.edit(embed = e)
-                  break
-            if('No results found' in result_names[0] or i == 10):
-              await msg.edit(embed = discord.Embed(title = "Error", description = "You have searched for shows not in our database. Please add a show in our database next time.", color = discord.Color.red()))
-              await asyncio.sleep(5)
-              await msg.delete()
-              return
 
             eone = '1\U000020e3'
             etwo = '2\U000020e3'
@@ -88,11 +50,56 @@ class MyBot(commands.Bot):
             ecross = '\U0000274c'
 
             emojis = [eone,etwo,ethree,efour,efive,esix,eseven,eeight,enine,eten,echeck,ecross]
+
+            endMessage = 0
+            e = discord.Embed(title = "Searching for your anime", description = "tick tock", color = discord.Color.green())
+            msg = await ctx.send(embed=e)
+            await asyncio.sleep(3)
+            searchString = ''
+            result_names = []
+            try:
+              assert(len(args)>0)
+              searchString = ' '.join(args)
+            except:
+              activeUser = ctx.message.author
+              e = discord.Embed(
+                  title = "Your Search Results",
+                  description = "Missing show name. Refer to !help for more details.",
+                  color = discord.Color.red()
+                  )
+              e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+              await msg.edit(embed=e)
+              await asyncio.sleep(10)
+              await msg.delete()
+              return
+            else:
+              back = backend.Backend()
+              result_names = back.getSearchResultsInNames(searchString, 5)
+              result = back.getSearchResultsInNameFormatHelper(result_names)
+              activeUser = ctx.message.author
+              e = discord.Embed(
+                  title = "Please choose from the following shows",
+                  description = result,
+                  color = discord.Color.blue()
+                  )
+              e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+              e.set_footer(text="To cancel, press "+ecross)
+              await msg.edit(embed = e)
+
+            if len(result_names) > 0 and 'No results found' in result_names[0]:
+              await msg.edit(embed = discord.Embed(title = "Error", description = "You have searched for shows not in our database. Please add a show in our database next time.", color = discord.Color.red()))
+              await asyncio.sleep(5)
+              await msg.delete()
+              return
+
             for i in range(len(result_names)):
               await msg.add_reaction(emojis[i])
+            await msg.add_reaction(ecross)
 
             def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
-              return u.id == ctx.author.id and reaction.message.channel.id == ctx.channel.id and str(reaction.emoji) in emojis
+              print("reaction id",reaction.message.id)
+              print("ctx id",msg.id)
+              return u.id == ctx.author.id and reaction.message.id == msg.id and str(reaction.emoji) in emojis
 
             showname = ''
             try:
@@ -101,11 +108,15 @@ class MyBot(commands.Bot):
               await msg.delete()
             else:
               # use discord reaction to get show name
+              if reaction.emoji == ecross:
+                await msg.delete()
+                return
+
               showname = result_names[emojis.index(reaction.emoji)]
               await msg.clear_reactions()
               await msg.edit(embed = discord.Embed(title = "Is this your show?", description=showname, color=discord.Color.blue()))
-              await msg.add_reaction(emojis[10])
-              await msg.add_reaction(emojis[11])
+              await msg.add_reaction(echeck)
+              await msg.add_reaction(ecross)
 
             try:
               reaction, user = await self.wait_for(event = "reaction_add", timeout = 90.0, check=check)
@@ -131,7 +142,7 @@ class MyBot(commands.Bot):
                    await asyncio.sleep(90)
                    await msg.delete()
                else:
-                 await msg.edit(embed = discord.Embed(title = "Sorry!", description = "You can run our bot again anytime", color=discord.Color.red()))
+                 await msg.edit(embed = discord.Embed(title = "Oops! That was the wrong show name.", description = "You can run our bot again anytime", color=discord.Color.red()))
                  await asyncio.sleep(5)
                  await msg.delete()
 
@@ -220,7 +231,9 @@ class MyBot(commands.Bot):
               color=discord.Color.red()
               )
           e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
-          await ctx.send(embed=e)
+          msg = await ctx.send(embed=e)
+          await asyncio.sleep(5)
+          await msg.delete()
 
         @self.command()
         async def help(ctx):
