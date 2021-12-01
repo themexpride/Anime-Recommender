@@ -109,11 +109,10 @@ class _Backend:
       if showid in user_anime_ids:
         db.AniRecDBCol.update_one({'id':userid, 'anime.id':showid},{"$set":{"anime.$.rating":rating}})
         return "Show rating updated successfully."
-      print(newShow)
       db.AniRecDBCol.update_one( {'id': userid}, {"$push": {"anime": newShow} } )
     return "Show rated successfully."
 
-  def deleteShow(self, userid: int, showname, str) -> str:
+  def deleteShow(self, userid: int, showname: str) -> str:
     showid = self._getIdFromName(showname)
     if showid == -1:
       return "Invalid show name"
@@ -126,7 +125,7 @@ class _Backend:
       user_anime_ids[ user_animes[i]['id'] ] = i
     if showid not in user_anime_ids:
       return "User has not rated this show."
-    user_animes = user_animes.pop(user_anime_ids[showid])
+    user_animes.pop(user_anime_ids[showid])
     db.AniRecDBCol.update_one( {'id': userid}, {"$set": {'anime': user_animes} } )
     return "Show deleted successfully."
 

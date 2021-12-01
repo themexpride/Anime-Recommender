@@ -97,8 +97,6 @@ class MyBot(commands.Bot):
             await msg.add_reaction(ecross)
 
             def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
-              print("reaction id",reaction.message.id)
-              print("ctx id",msg.id)
               return u.id == ctx.author.id and reaction.message.id == msg.id and str(reaction.emoji) in emojis
 
             showname = ''
@@ -106,6 +104,7 @@ class MyBot(commands.Bot):
               reaction, user = await self.wait_for(event = "reaction_add", timeout=90.0, check=check)
             except asyncio.TimeoutError:
               await msg.delete()
+              return
             else:
               # use discord reaction to get show name
               if reaction.emoji == ecross:
@@ -122,6 +121,7 @@ class MyBot(commands.Bot):
               reaction, user = await self.wait_for(event = "reaction_add", timeout = 90.0, check=check)
             except asyncio.TimeoutError:
               await msg.delete()
+              return
             else:
                if (reaction.emoji == echeck):
                  # save show name
@@ -134,12 +134,13 @@ class MyBot(commands.Bot):
                    reaction, user = await self.wait_for(event = "reaction_add", timeout=90.0, check=check)
                  except asyncio.TimeoutError:
                    await msg.delete()
+                   return
                  else:
                    user_rating = emojis.index(reaction.emoji)+1
                    finalconf = backend.Backend().addOrUpdateShow(ctx.author.id, showname, user_rating)
                    await msg.edit(embed = discord.Embed(title = "Confirmed rating.", description = finalconf, color=discord.Color.blue()))
                    await msg.clear_reactions()
-                   await asyncio.sleep(90)
+                   await asyncio.sleep(60)
                    await msg.delete()
                else:
                  await msg.edit(embed = discord.Embed(title = "Oops! That was the wrong show name.", description = "You can run our bot again anytime", color=discord.Color.red()))
@@ -150,9 +151,21 @@ class MyBot(commands.Bot):
         async def showRatings(ctx):
           activeUser = ctx.message.author
           result = backend.Backend().viewShows(ctx.author.id)
-          table = ""
+          if len(result) == 0:
+            e = discord.Embed(
+                title="Your show ratings:",
+                description="You have not rated any shows",
+                color=discord.Color.red()
+                )
+            e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+            msg = await ctx.send(embed=e)
+            await asyncio.sleep(5)
+            await msg.delete()
+            return
+
+          table = "\n"
           for i in range(len(result)):
-            table += "• **"+result[i][0]+":** " + result[i][1] + "\n\n"
+            table += "• **"+result[i][0]+":** " + result[i][1] + "\n"
           output = f"{table}"
           e = discord.Embed(
               title="Your show ratings:",
@@ -160,11 +173,50 @@ class MyBot(commands.Bot):
               color=discord.Color.blue()
               )
           e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
-          await ctx.send(embed=e)
+          msg = await ctx.send(embed=e)
+          await asyncio.sleep(20)
+          await msg.delete()
 
         @self.command()
         async def deleteRating(ctx, *args):
           activeUser = ctx.message.author
+          show_name = ""
+          try:
+            assert(len(args)>0)
+            show_name = ' '.join(args)
+          except:
+            e = discord.Embed(
+                title = "Your deletion request:",
+                description = "Missing show name. Refer to !help for more details.",
+                color = discord.Color.red()
+                )
+            e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+            msg = await ctx.send(embed=e)
+            await asyncio.sleep(10)
+            await msg.delete()
+            return
+          else:
+            result = backend.Backend().deleteShow(ctx.author.id, show_name)
+            if 'successfully' in result:
+              e = discord.Embed(
+                  title = "Your deletion request:",
+                  description = result,
+                  color = discord.Color.blue()
+                  )
+              e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+              msg = await ctx.send(embed=e)
+              await asyncio.sleep(15)
+              await msg.delete()
+            else:
+              e = discord.Embed(
+                  title = "Your deletion request:",
+                  description = result,
+                  color = discord.Color.red()
+                  )
+              e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+              msg = await ctx.send(embed=e)
+              await asyncio.sleep(15)
+              await msg.delete()
 
         @self.command()
         async def getRec(ctx, *args):
@@ -191,35 +243,35 @@ class MyBot(commands.Bot):
             e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
             msg = await ctx.send(embed=e)
 
-        @self.command()
-        async def searchAnime(ctx, *args):
-          count = 0
-          searchString = ''
-          try:
-            assert(len(args)>1)
-            count = int(args[-1])
-            assert(count > 0 and count < 11)
-            searchString = ' '.join(args[:-1])
-          except:
-            activeUser = ctx.message.author
-            e = discord.Embed(
-                title = "Your Search Results",
-                description = "Insert valid number of search results (1-10)",
-                color = discord.Color.red()
-                )
-            e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
-            msg = await ctx.send(embed=e)
-          else:
-            back = backend.Backend()
-            result = back.getSearchResultsInNameFormatHelper(back.getSearchResultsInNames(searchString, count))
-            activeUser = ctx.message.author
-            e = discord.Embed(
-                title = "Your Search Results",
-                description = result,
-                color = discord.Color.blue()
-                )
-            e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
-            msg = await ctx.send(embed=e)
+#        @self.command()
+#        async def searchAnime(ctx, *args):
+#          count = 0
+#          searchString = ''
+#          try:
+#            assert(len(args)>1)
+#            count = int(args[-1])
+#            assert(count > 0 and count < 11)
+#            searchString = ' '.join(args[:-1])
+#          except:
+#            activeUser = ctx.message.author
+#            e = discord.Embed(
+#                title = "Your Search Results",
+#                description = "Insert valid number of search results (1-10)",
+#                color = discord.Color.red()
+#                )
+#            e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+#            msg = await ctx.send(embed=e)
+#          else:
+#            back = backend.Backend()
+#            result = back.getSearchResultsInNameFormatHelper(back.getSearchResultsInNames(searchString, count))
+#            activeUser = ctx.message.author
+#            e = discord.Embed(
+#                title = "Your Search Results",
+#                description = result,
+#                color = discord.Color.blue()
+#                )
+#            e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+#            msg = await ctx.send(embed=e)
 
         @self.event
         async def on_command_error(ctx, error):
@@ -241,24 +293,29 @@ class MyBot(commands.Bot):
               title="Commands",
               color=discord.Color.gold()
               )
-          e.add_field(
-              name="!searchAnime <search query> <# of results (1-10)>",
-              value="Use this command to search for an anime in our database. Specify the command, a search query, and the number (1-10) of results you want generated.",
-              inline=False
-          )
-          e.add_field(
-              name="!getRec <# of recommendations (1-15)>",
-              value="Use this command to get a specified number of recommendations from your anime list. Specify the command and the number (1-15) of results you want generated. ",
-              inline=False
-           )
+#          e.add_field(
+#              name="!searchAnime <search query> <# of results (1-10)>",
+#              value="Use this command to search for an anime in our database. Specify the command, a search query, and the number (1-10) of results you want generated.",
+#              inline=False
+#          )
           e.add_field(
               name="!rateAnime <show name>",
               value="Use this command to add a show or update a show's rating. Specify the command and the show name to search in our database and your anime list to then add to your list or update. Once the bot has the show, it adds/updates a show's rating when you click on the numbered reactions (1-10).",
               inline=False
           )
           e.add_field(
+              name="!showRatings",
+              value="Use this command to view your ratings. Specify the command to view the name and rating for each show that you rated.",
+              inline=False
+          )
+          e.add_field(
               name="!deleteRating <show name>",
               value="Use this command to delete a show from your anime list. Specify the command and the show name to search in your anime list and delete it.",
+              inline=False
+          )
+          e.add_field(
+              name="!getRec <# of recommendations (1-15)>",
+              value="Use this command to get a specified number of recommendations from your anime list. Specify the command and the number (1-15) of results you want generated. ",
               inline=False
           )
           anime_url = "https://us.rule34.xxx//images/4608/1603d38255486b28981da501b0da5801.jpeg?5249040"
