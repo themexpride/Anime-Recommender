@@ -243,6 +243,52 @@ class MyBot(commands.Bot):
             e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
             msg = await ctx.send(embed=e)
 
+        @self.command()
+        async def rateProf(ctx, *args):
+          activeUser = ctx.message.author
+          e = discord.Embed(
+                 title = "Rating Prof. Navid Shaghaghi",
+                 description = "What would you rate him",
+                 color=discord.Color.green())
+          e.add_image(url='https://www.scu.edu/media/college-of-arts-and-sciences/math-and-cs/faculty-amp-staff/Navid-Shaghaghi-1-261x271.jpg')
+          msg = await ctx.send(embed=e)
+          eone = '1\U000020e3'
+          etwo = '2\U000020e3'
+          ethree  = '3\U000020e3'
+          efour = '4\U000020e3'
+          efive = '5\U000020e3'
+          esix = '6\U000020e3'
+          eseven = '7\U000020e3'
+          eeight = '8\U000020e3'
+          enine = '9\U000020e3'
+          eten = '\U0001f51f'
+          echeck = '\U00002705'
+          ecross = '\U0000274c'
+
+          emojis = [eone,etwo,ethree,efour,efive,esix,eseven,eeight,enine,eten,echeck,ecross]
+
+          for i in range(len(result_names)):
+              await msg.add_reaction(emojis[i])
+          await msg.add_reaction(ecross)
+
+          def check(reaction: discord.Reaction, u: Union[discord.Member, discord.User]):
+              return u.id == ctx.author.id and reaction.message.id == msg.id and str(reaction.emoji) in emojis
+
+          try:
+              reaction, user = await self.wait_for(event = "reaction_add", timeout=90.0, check=check)
+          except asyncio.TimeoutError:
+              await msg.delete()
+              return
+          else:
+              # use discord reaction to get show name
+            if reaction.emoji == ecross:
+                await msg.delete()
+                return
+            else:
+                msg.edit(e = discord.Embed(title = "Your rating doesn't matter", description="Navid is a perfect 10", color=discord.Color.blue()))
+                msg.add_image(url='https://www.beepods.com/wp-content/uploads/2020/05/15542464_10154636192565944_4173060157659889425_n.jpg')
+                return
+
 #        @self.command()
 #        async def searchAnime(ctx, *args):
 #          count = 0
