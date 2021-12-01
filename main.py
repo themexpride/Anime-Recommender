@@ -250,7 +250,7 @@ class MyBot(commands.Bot):
                  title = "Rating Prof. Navid Shaghaghi",
                  description = "What would you rate him",
                  color=discord.Color.green())
-          e.add_image(url='https://www.scu.edu/media/college-of-arts-and-sciences/math-and-cs/faculty-amp-staff/Navid-Shaghaghi-1-261x271.jpg')
+          e.set_image(url='https://www.scu.edu/media/college-of-arts-and-sciences/math-and-cs/faculty-amp-staff/Navid-Shaghaghi-1-261x271.jpg')
           msg = await ctx.send(embed=e)
           eone = '1\U000020e3'
           etwo = '2\U000020e3'
@@ -267,7 +267,7 @@ class MyBot(commands.Bot):
 
           emojis = [eone,etwo,ethree,efour,efive,esix,eseven,eeight,enine,eten,echeck,ecross]
 
-          for i in range(len(result_names)):
+          for i in range(10):
               await msg.add_reaction(emojis[i])
           await msg.add_reaction(ecross)
 
@@ -282,11 +282,13 @@ class MyBot(commands.Bot):
           else:
               # use discord reaction to get show name
             if reaction.emoji == ecross:
+                await msg.clear_reactions()
                 await msg.delete()
                 return
             else:
-                msg.edit(e = discord.Embed(title = "Your rating doesn't matter", description="Navid is a perfect 10", color=discord.Color.blue()))
-                msg.add_image(url='https://www.beepods.com/wp-content/uploads/2020/05/15542464_10154636192565944_4173060157659889425_n.jpg')
+                await msg.edit(e = discord.Embed(title = "Your rating doesn't matter", description="Navid is a perfect 10", color=discord.Color.blue()))
+                await msg.clear_reactions()
+                await msg.set_image(url='https://www.beepods.com/wp-content/uploads/2020/05/15542464_10154636192565944_4173060157659889425_n.jpg')
                 return
 
 #        @self.command()
