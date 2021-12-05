@@ -10,22 +10,33 @@ db = getDB()
 class _Backend:
   _backend = None
 
+  # initialize the singleton backend instance,
+  # read the anime file to set up mappings between
+  # anime name and dataset id
   def __init__(self):
     # load anime info
     self._animes = pd.read_csv('anime.csv')
     self._model = Model()
 
+  # private helper function to check if an input string
+  # is a valid anime name
   def _isValidAnimeName(self, name: str) -> bool:
     return name in self._animes['name'].values
 
+  # private helper function to check if an input integer
+  # is a valid dataset id
   def _isValidAnimeId(self, id: int) -> bool:
     return id in self._animes['anime_id'].values
 
+  # private helper function to get the dataset id
+  # of an anime given its string name
   def _getIdFromName(self, name: str) -> int:
     if not self._isValidAnimeName(name):
       return -1
     return self._animes.loc[self._animes['name'] == name]['anime_id'].values[0]
 
+  # private helper function to get the anime name
+  # given the dataset id of an anime
   def _getNameFromId(self, id: int) -> str:
     if not self._isValidAnimeId(id):
       return "Invalid Id"
@@ -49,17 +60,24 @@ class _Backend:
       for i in name_list:
         results.append(self._getIdFromName(i))
     return results
-  
+
+  # Helper function to format search results
   def getSearchResultsInNameFormatHelper(self, list: List[int]) -> str:
     ans = ''
     for i in range(len(list)):
       ans += str(i+1)+". "+list[i]+"\n\n"
     return ans
 
+  # public function to bridge the frontend to the model
+  # queries the model for a specific user to get recommendations
+  # input: user's discord id, number of recommended shows
+  # output: list of recommended shows as a string
   def query(self, id: int, count: int) -> str:
+    # find the user in the database
     user = db.AniRecDBCol.find_one( {'id' : id } )
     if user == None: return "User has not rated any shows."
 
+    # read the entry for the user from the database
     user_animes = user['anime']
     user_ratings = []
     user_anime_ids = []
@@ -69,11 +87,14 @@ class _Backend:
 
     if len(user_anime_ids) < 5: return "User has not rated enough shows."
 
+    # set up for the model
     animes_watched = pd.DataFrame(user_anime_ids)
     animes_not_watched = self._animes[ ~self._animes["anime_id"].isin(user_anime_ids) ]["anime_id"]
 
+    # query the model
     new_list = Model().predict(count, user_ratings, animes_not_watched.tolist())
 
+    # format the results as a string and return
     results = []
     for i in new_list:
       results.append(self._getNameFromId(i))
@@ -83,6 +104,8 @@ class _Backend:
        ans += str(i+1)+". "+results[i]+"\n\n"
     return ans
 
+  # public function to read the database and return a list of
+  # ratings by a specific user (user's discord id)
   def viewShows(self, userid: int) -> List[List[str]]:
     user = db.AniRecDBCol.find_one( {'id':userid} )
     if user == None: return []
@@ -92,6 +115,9 @@ class _Backend:
       ans += [[self._getNameFromId(user_animes[i]['id']), str(user_animes[i]['rating'])]]
     return ans
 
+  # public function to update the database with a new rating
+  # input: user's discord id, anime name as a string, rating as an integer
+  # output: status of this operation as a string
   def addOrUpdateShow(self, userid: int, showname: str, rating: int) -> str:
     showid = int(self._getIdFromName(showname))
     if showid == -1:
@@ -112,6 +138,9 @@ class _Backend:
       db.AniRecDBCol.update_one( {'id': userid}, {"$push": {"anime": newShow} } )
     return "Show rated successfully."
 
+  # public function to delete a rating from the database
+  # input: user's discord id, anime name as a string
+  # output: status of this operation as a string
   def deleteShow(self, userid: int, showname: str) -> str:
     showid = self._getIdFromName(showname)
     if showid == -1:
@@ -129,6 +158,7 @@ class _Backend:
     db.AniRecDBCol.update_one( {'id': userid}, {"$set": {'anime': user_animes} } )
     return "Show deleted successfully."
 
+# singleton constructor function
 def Backend():
   if _Backend._backend is None:
     _Backend._backend = _Backend()
