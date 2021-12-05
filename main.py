@@ -250,7 +250,8 @@ class MyBot(commands.Bot):
                  title = "Rating Prof. Navid Shaghaghi",
                  description = "What would you rate him",
                  color=discord.Color.green())
-          e.set_image(url='https://www.scu.edu/media/college-of-arts-and-sciences/math-and-cs/faculty-amp-staff/Navid-Shaghaghi-1-261x271.jpg')
+          e.set_author(name=activeUser, icon_url=activeUser.avatar_url)
+          e.set_image(url="https://www.scu.edu/media/college-of-arts-and-sciences/math-and-cs/faculty-amp-staff/Navid-Shaghaghi-1-261x271.jpg")
           msg = await ctx.send(embed=e)
           eone = '1\U000020e3'
           etwo = '2\U000020e3'
@@ -281,15 +282,16 @@ class MyBot(commands.Bot):
               return
           else:
               # use discord reaction to get show name
-            if reaction.emoji == ecross:
-                await msg.clear_reactions()
-                await msg.delete()
-                return
-            else:
-                await msg.edit(e = discord.Embed(title = "Your rating doesn't matter", description="Navid is a perfect 10", color=discord.Color.blue()))
-                await msg.clear_reactions()
-                await msg.set_image(url='https://www.beepods.com/wp-content/uploads/2020/05/15542464_10154636192565944_4173060157659889425_n.jpg')
-                return
+               if reaction.emoji == ecross:
+                 await msg.clear_reactions()
+                 await msg.delete()
+                 return
+               else:
+                 await msg.clear_reactions()
+                 e = discord.Embed(title = "Your rating doesn't matter", description = "Navid is the best", color = discord.Color.blue())
+                 e.set_image(url="https://www.beepods.com/wp-content/uploads/2020/05/15542464_10154636192565944_4173060157659889425_n.jpg")
+                 await msg.edit(embed=e)
+                 return
 
 #        @self.command()
 #        async def searchAnime(ctx, *args):
